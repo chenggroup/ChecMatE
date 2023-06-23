@@ -1,0 +1,18 @@
+# Default LASP settings for calculations in the VASP-SSW.
+# Reasonably robust.
+potential: vasp
+explore_type: ssw
+Run_type: 15
+SSW.SSWsteps: 20
+SSW.Temp: 300
+SSW.NG: 10
+SSW.NG_cell: 8
+SSW.ds_atom: 0.6000
+SSW.ds_cell: 0.5000
+SSW.ftol: 0.05
+SSW.strtol: 0.05
+SSW.MaxOptstep: 300
+SSW.printevery: T
+SSW.printselect: 0
+SSW.printdelay: -1
+SSW.output: F

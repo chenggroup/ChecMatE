@@ -1,0 +1,109 @@
+general:
+    "number_node": 1
+    "cpu_per_node": 1
+    "gpu_per_node": 0
+    "queue_name": "fat"
+    "group_size": 1
+    "kwargs":
+        "gpu_usage": false
+    "custom_flags": ["#BSUB -J test"]
+
+cpu-lasp:
+    "number_node": 1
+    "cpu_per_node": 32
+    "gpu_per_node": 0
+    "queue_name": "c53-long"
+    "group_size": 1
+    "kwargs":
+        "gpu_usage": false
+    "custom_flags": ["#BSUB -J lasphub"]
+    "module_list": ["intel/17.5.239","mpi/intel/2017.5.239","gcc/7.4.0","lasphub/3.3.1"]
+
+gpu1-lasp:
+    "number_node": 1
+    "cpu_per_node": 8
+    "gpu_per_node": 1
+    "queue_name": "gpu1"
+    "group_size": 1
+    "strategy":
+        "if_cuda_multi_devices": false
+    "custom_flags": ["#SBATCH --job-name=lasphub", "#SBATCH -t 24:00:00"]
+    "module_list": ["lasphub/3.4.5","deepmd/2.1"]
+
+gpu2-lasp:
+    "number_node": 1
+    "cpu_per_node": 1
+    "gpu_per_node": 1
+    "queue_name": "gpu2"
+    "group_size": 1
+    "strategy":
+        "if_cuda_multi_devices": false
+    "custom_flags": ["#SBATCH --gres=gpu:1g.10gb:1", "#SBATCH --job-name=lasphub", "#SBATCH -t 24:00:00"]
+    "module_list": ["lasphub/3.4.5","deepmd/2.1"]
+
+gpu3-lasp:
+    "number_node": 1
+    "cpu_per_node": 4
+    "gpu_per_node": 1
+    "queue_name": "gpu3"
+    "group_size": 1
+    "custom_flags": ["#SBATCH --job-name=lasphub", "#SBATCH -t 24:00:00"]
+    "module_list": ["lasphub/3.4.5","deepmd/2.1"]
+
+
+cpu-vasp:
+    "number_node": 2
+    "cpu_per_node": 32
+    "gpu_per_node": 0
+    "queue_name": "c53-large"
+    "group_size": 50
+    "kwargs":
+        "gpu_usage": false
+    "custom_flags": ["#BSUB -J vasp"]
+    "module_list": ["intel/17.5.239", "mpi/intel/2017.5.239", "vasp/5.4.4"]
+
+cpu-cp2k:
+    "number_node": 2
+    "cpu_per_node": 32
+    "gpu_per_node": 0
+    "queue_name": "c53-large"
+    "group_size": 50
+    "kwargs":
+        "gpu_usage": false
+    "custom_flags": ["#BSUB -J cp2k"]
+    "module_list": ["intel/17.5.239", "mpi/intel/2017.5.239", "gcc/5.5.0", "cp2k/7.1"]
+    "wait_time": 15
+
+
+
+gpu3:
+    "number_node": 1
+    "cpu_per_node": 4
+    "gpu_per_node": 1
+    "queue_name": "gpu3"
+    "group_size": 1
+    "custom_flags": ["#SBATCH --job-name=dpmd", "#SBATCH -t 96:00:00"]
+    "module_list": ["deepmd/2.1"]
+
+gpu1:
+    "number_node": 1
+    "cpu_per_node": 8
+    "gpu_per_node": 1
+    "queue_name": "gpu1"
+    "group_size": 1
+    "custom_flags": ["#SBATCH --job-name=dpmd", "#SBATCH -t 96:00:00"]
+    "strategy":
+        "if_cuda_multi_devices": false
+    "module_list": ["deepmd/2.1"]
+
+gpu2:
+    "number_node": 1
+    "cpu_per_node": 1
+    "gpu_per_node": 1
+    "queue_name": "gpu2"
+    "group_size": 1
+    "custom_flags": ["#SBATCH --gres=gpu:1g.10gb:1", "#SBATCH --job-name=dpmd", "#SBATCH -t 96:00:00"]
+    "strategy":
+        "if_cuda_multi_devices": false
+    "module_list": ["deepmd/2.1"]
+

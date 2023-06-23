@@ -1,0 +1,5 @@
+"batch_type": "slurm"
+"clean_asynchronously": True
+"context_type": "LazyLocalContext"
+"local_root": "./"
+"remote_root": "/data/yxguo/dpssw/workdirs"

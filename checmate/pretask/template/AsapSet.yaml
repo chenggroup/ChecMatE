@@ -1,0 +1,77 @@
+"gen_desc":
+  "type": "soap"
+  "prefix": "ASAP-desc"
+  "n_process": 1
+  "peratom": False
+  "reducer_type": "average"
+  "element_wise": False
+  "zeta": 1
+
+  "soap": 
+    "cutoff": null
+    "nmax": null
+    "lmax": null
+    "sigma": 0.5
+    "usaop": "minimal"
+    "rbf": "gto"
+    "crossover": False
+
+  "acsf":
+    "cutoff": null
+    "uacsf": "minimal"
+
+
+"map":
+  "type": "pca"
+  "prefix": "ASAP-map"
+  "use_atomic_descriptors": False
+  "only_use_species": null
+  "outmode": "xyz"
+
+  "pca":
+    "dimension": 10
+    "scale": True
+
+  "skpca":
+    "dimension": 10
+    "scale": True
+    "sparse_mode": "fps"
+    "n_sparse": -1
+    "kernel": "linear"
+    "kernel_parameter": null
+
+  "tsne":
+    "metric": "euclidean"
+    "learning_rate": 200
+    "early_exaggeration": 12
+    "perplexity": 30
+    "pca": True
+    "scale": True
+    "dimension": 10
+
+  "umap":
+    "n_neighbors": 10
+    "min_dist": 0.1
+    "metric": "euclidean"
+    "scale": True
+    "dimension": 10
+
+
+"cluster":
+  "prefix": "ASAP-cluster"
+  "type": "dbscan"
+  "savexyz": False
+  "savetxt": False
+  "use_atomic_descriptors": False
+  "only_use_species": null
+
+  "dbscan":
+    "metric": "euclidean"
+    "min_samples": 2
+    "eps": null
+
+  "plot_pca":
+    "dimension": 10
+    "scale": True
+    "axes": [0,1]
+    "annotate": null

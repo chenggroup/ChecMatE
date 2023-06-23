@@ -1,0 +1,19 @@
+# Sample input script template for DP-SSW
+
+# Initialization
+
+units           metal
+boundary        p p p
+atom_style      atomic
+atom_modify map yes
+
+# Atom definition
+
+read_data       data.simple
+$mass
+
+#Potential function
+pair_style      $models
+pair_coeff      * *
+
+compute peratom all pressure NULL virial

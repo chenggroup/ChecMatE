@@ -1,0 +1,94 @@
+{
+    "FORCE_EVAL": {
+        "METHOD": "Quickstep",
+        "STRESS_TENSOR": "NONE",
+        "DFT": {
+            "BASIS_SET_FILE_NAME": "BASIS_MOLOPT",
+            "POTENTIAL_FILE_NAME": "GTH_POTENTIALS",
+            "MGRID": {
+                "CUTOFF": 1000
+            },
+            "QS": {
+                "EPS_DEFAULT": 1.0E-13
+            },
+            "SCF": {
+                "SCF_GUESS": "RESTART",
+                "EPS_SCF": 1.0E-6,
+                "MAX_SCF": 500,
+                "OT": {
+                    "MINIMIZER": "DIIS",
+                    "PRECONDITIONER": "FULL_SINGLE_INVERSE",
+                    "ENERGY_GAP": 0.1
+                },
+                "PRINT": {
+                    "RESTART": {
+                        "EACH": {
+                            "QS_SCF": 50
+                        },
+                        "ADD_LAST": "NUMERIC"
+                    }
+                }
+            },
+            "XC": {
+                "XC_FUNCTIONAL": {
+                    "_": "PBE"
+                }
+            }
+        },
+        "SUBSYS": {
+            "CELL": {
+                "A": "16.8857 0. 0.",
+                "B": "0. 14.62346 0.",
+                "C": "0. 0. 75.0"
+            },
+            "TOPOLOGY": {
+                "COORD_FILE_FORMAT": "XYZ",
+                "COORD_FILE_NAME": "./coord.xyz"
+            },
+            "KIND": [
+                {
+                    "_": "O",
+                    "POTENTIAL": "GTH-PBE-q6",
+                    "BASIS_SET": "DZVP-MOLOPT-SR-GTH"
+                },
+                {
+                    "_": "Ga",
+                    "POTENTIAL": "GTH-PBE-q13",
+                    "BASIS_SET": "DZVP-MOLOPT-SR-GTH"
+                }
+            ]
+        },
+        "PRINT": {
+            "FORCES": {
+                "_": "ON"
+            },
+            "STRESS_TENSOR": {
+                "_": "ON"
+            }
+        }
+    },
+    "GLOBAL": {
+        "PROJECT": "cp2k",
+        "EXTENDED_FFT_LENGTHS": "T",
+        "RUN_TYPE": "GEO_OPT"
+    },
+    "MOTION": {
+        "GEO_OPT": {
+            "TYPE": "minimization",
+            "OPTIMIZER": "BFGS",
+            "MAX_ITER": 200,
+            "MAX_FORCE": 4.5E-5
+        },
+        "PRINT": {
+            "TRAJECTORY": {},
+            "VELOCITIES": {},
+            "FORCES": {
+                "_": "ON"
+            },
+            "RESTART_HISTORY": {},
+            "RESTART": {
+                "BACKUP_COPIES": 3
+            }
+        }
+    }
+}

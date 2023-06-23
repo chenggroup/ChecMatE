@@ -1,0 +1,86 @@
+{
+    "FORCE_EVAL": {
+        "METHOD": "Quickstep",
+        "STRESS_TENSOR": "NONE",
+        "DFT": {
+            "BASIS_SET_FILE_NAME": "BASIS_MOLOPT",
+            "POTENTIAL_FILE_NAME": "GTH_POTENTIALS",
+            "MGRID": {
+                "CUTOFF": 1000
+            },
+            "QS": {
+                "EPS_DEFAULT": 1.0E-13
+            },
+            "SCF": {
+                "SCF_GUESS": "RESTART",
+                "EPS_SCF": 1.0E-6,
+                "MAX_SCF": 500,
+                "OT": {
+                    "MINIMIZER": "DIIS",
+                    "PRECONDITIONER": "FULL_SINGLE_INVERSE",
+                    "ENERGY_GAP": 0.1
+                },
+                "PRINT": {
+                    "RESTART": {
+                        "EACH": {
+                            "QS_SCF": 50
+                        },
+                        "ADD_LAST": "NUMERIC"
+                    }
+                }
+            },
+            "XC": {
+                "XC_FUNCTIONAL": {
+                    "_": "PBE"
+                }
+            },
+            "PRINT": {
+                "MO_CUBES": {
+                    "_": "ON",
+                    "EACH":{
+                        "MD": 10,
+                        "GEO_OPT": 0
+                    },
+                    "NLUMO": 1,
+                    "NHOMO": 1,
+                    "ADD_LAST": "NUMERIC"
+                }
+            }
+        },
+        "SUBSYS": {
+            "CELL": {
+                "A": "0. 0. 0.",
+                "B": "0. 0. 0.",
+                "C": "0. 0. 0."
+            },
+            "TOPOLOGY": {
+                "COORD_FILE_FORMAT": "XYZ",
+                "COORD_FILE_NAME": "./coord.xyz"
+            },
+            "KIND": [
+                {
+                    "_": "O",
+                    "POTENTIAL": "GTH-PBE-q6",
+                    "BASIS_SET": "DZVP-MOLOPT-SR-GTH"
+                },
+                {
+                    "_": "Ga",
+                    "POTENTIAL": "GTH-PBE-q13",
+                    "BASIS_SET": "DZVP-MOLOPT-SR-GTH"
+                }
+            ]
+        },
+        "PRINT": {
+            "FORCES": {
+                "_": "ON"
+            }
+        }
+    },
+    "GLOBAL": {
+        "PROJECT": "cp2k",
+        "RUN_TYPE": "ENERGY_FORCE",
+        "PRINT_LEVEL": "medium",
+        "WALLTIME": 345000,
+        "EXTENDED_FFT_LENGTHS": "T"
+    }
+}
