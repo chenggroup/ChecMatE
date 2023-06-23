@@ -1,0 +1,12 @@
+units           metal
+boundary        p p p
+atom_style      atomic
+atom_modify map yes
+read_data       data.simple
+mass            1  91.22 
+mass            2  63.54 
+pair_style     hybrid/overlay  eam/alloy buck 10
+pair_coeff      * *  eam/alloy ../CuZr.eam Zr Cu
+pair_coeff      * * buck 1E6 0.1 0.0
+
+compute peratom all pressure NULL virial
