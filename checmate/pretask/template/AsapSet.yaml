@@ -4,7 +4,7 @@
   "n_process": 1
   "peratom": False
   "reducer_type": "average"
-  "element_wise": False
+  "element_wise": True
   "zeta": 1
 
   "soap": 
@@ -36,7 +36,7 @@
     "dimension": 10
     "scale": True
     "sparse_mode": "fps"
-    "n_sparse": -1
+    "n_sparse": 100
     "kernel": "linear"
     "kernel_parameter": null
 
@@ -64,6 +64,7 @@
   "savetxt": False
   "use_atomic_descriptors": False
   "only_use_species": null
+  "matrix_type": "dm"
 
   "dbscan":
     "metric": "euclidean"

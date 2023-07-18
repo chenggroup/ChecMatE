@@ -1,9 +1,9 @@
+import glob
 import numpy as np
 from os import path
 from scipy.spatial.distance import cdist
 
 from asaplib.data.xyz import ASAPXYZ
-from asaplib.kernel.ml_kernel_operations import kerneltodis
 from asaplib.hypers.hyper_soap import universal_soap_hyper
 from asaplib.hypers.hyper_acsf import universal_acsf_hyper
 from asaplib.cli.func_asap import cluster_process, set_reducer, map_save
@@ -11,8 +11,13 @@ from asaplib.cluster.ml_cluster_fit import LAIO_DB, sklearn_DB
 from asaplib.cluster.ml_cluster_tools import get_cluster_size, get_cluster_properties
 from asaplib.reducedim.dim_reducer import Dimension_Reducers
 
-from ...pretask.inputs import MODULE_DIR
-from ...pretask.sets import load_config, update_dict
+from matplotlib import cm
+from matplotlib import pyplot as plt
+import matplotlib.patheffects as PathEffects
+
+from ... import wflog
+from ...pretask.inputs import load_config
+from ...pretask.sets import update_dict
 
 
 class CallASAP():
@@ -39,8 +44,9 @@ class CallASAP():
         if properties:
             self.asapxyz.load_properties(properties)
 
-        default_setting = load_config(fpath=MODULE_DIR/"template"/"AsapSet.yaml")
-        self.setting = update_dict(default_setting, user_setting) if user_setting else default_setting
+        self.setting = load_config(fname="AsapSet")
+        if user_setting:
+       	    update_dict(self.setting, user_setting)
 
 
     def gen_desc(self, whether_to_write: bool=False):
@@ -52,7 +58,7 @@ class CallASAP():
         asapxyz.compute_global_descriptors(
             desc_spec_dict=desc_spec,
             keep_atomic=desc_setting.get("peratom", False),
-            n_process=desc_setting.get("n_process", False)
+            n_process=desc_setting.get("n_process", 1)
         )
 
         asapxyz.save_state(path.join(self.output_dir, desc_setting.get("prefix", "ASAP-desc")))
@@ -60,6 +66,7 @@ class CallASAP():
             asapxyz.write(path.join(self.output_dir, desc_setting.get("prefix", "ASAP-desc")))
         else:
             self.dm = asapxyz.fetch_computed_descriptors(list(desc_spec.keys()))
+            assert self.dm is not None
             if desc_setting.get("peratom", False):
                 self.dm_atomic = asapxyz.fetch_computed_atomic_descriptors(list(desc_spec.keys()))
 
@@ -166,12 +173,12 @@ class CallASAP():
                 map_dm = None
                 map_dm_atomic = self.__get_dm_atomic_species(species)
             else:
-                map_dm =  self.dm
+                map_dm = self.dm
                 map_dm_atomic = self.dm_atomic
         
         reduce_dict = self.get_reduce_dict()
-        km = self.map_process(map_dm, reduce_dict) if map_dm else None
-        km_atomic = self.map_process(map_dm_atomic, reduce_dict) if map_dm_atomic else None
+        km = self.map_process(map_dm, reduce_dict)
+        km_atomic = self.map_process(map_dm_atomic, reduce_dict)
 
         if whether_to_write:
             map_save(
@@ -313,15 +320,19 @@ class CallASAP():
 
     def map_process(self, map_matrix, reduce_dict):
         
-        dreducer = Dimension_Reducers(reduce_dict)
-        proj = dreducer.fit_transform(map_matrix)
+        if map_matrix is None:
+            return None
 
-        return proj
+        else:
+            dreducer = Dimension_Reducers(reduce_dict)
+            proj = dreducer.fit_transform(map_matrix)
+            return proj
 
 
-    def cluster(self, matrix_type="dm", whether_to_plot: bool=False, matrix=None):
+    def cluster(self, whether_to_plot: bool=False, matrix=None):
 
         cluster_setting = self.setting.get("cluster")
+        matrix_type = cluster_setting.get("matrix_type", "dm")
         ua = cluster_setting.get("use_atomic_descriptors", False)
         species = cluster_setting.get("only_use_species", None)
 
@@ -352,15 +363,16 @@ class CallASAP():
             self.setting, 
             {"gen_desc":{"peratom": ua}, "map":{"use_atomic_descriptors":ua, "only_use_species":species}}
         )
-        self.gen_desc()
 
         if matrix_type == "dm":
+            self.gen_desc()
             matrix = self.__get_dm_atomic_by_species(species) if ua else self.dm
         
         else:
             self.map()
-            matrix = kerneltodis(self.km_atomic) if ua else kerneltodis(self.km)
-        
+            matrix = self.km_atomic if ua else self.km
+
+        assert matrix is not None
         return matrix
             
         
@@ -376,17 +388,20 @@ class CallASAP():
         eps = dbscan_setting.get("eps", None)
         if eps is None:
             n = len(matrix)
-            sub_structs = np.random.choice(np.asarray(range(n)), 50, replace=False)
-            eps = np.percentile(cdist(matrix[sub_structs], matrix, metric), 100 * 10. / n)
+            #sub_structs = np.random.choice(np.asarray(range(n)), 50, replace=False)
+            sub_structs = np.random.choice(np.asarray(range(n)), int(n/5), replace=False)
+            percent = 1000/n if n<100 else 10000/n
+            eps = np.percentile(cdist(matrix[sub_structs], matrix, metric), percent)
+            #eps = np.percentile(cdist(matrix[sub_structs], matrix, metric), 100 * 10. / n)
+            if eps>0.1:
+                wflog.info("WARNING: The eps of DBSCAN is larger than 0.1, it is reseted to 0.1!")
+                eps = 0.1
     
         trainer = sklearn_DB(eps, dbscan_setting.get('min_samples', 2), metric)
         return trainer
 
 
     def __plot_cluster(self, labels, matrix, plot_setting):
-
-        from matplotlib import cm
-        from matplotlib import pyplot as plt
 
         proj = self.map_process(matrix, self.__pca_reducer(plot_setting))
 
@@ -399,14 +414,14 @@ class CallASAP():
         ax.set_ylabel(f"Principal Axis {axes[1]+1}", fontsize=15, labelpad=-3)
 
         annotate = plot_setting.get("annotate", None)
-        self.__scatter_part(labels, fig, ax, xy, annotate, cm=cm)
+        self.__scatter_part(labels, fig, ax, xy, annotate)
         
-        self.__cluster_label_part(labels, ax, xy, cm=cm)   
+        self.__cluster_label_part(labels, ax,xy)
             
         fig.savefig(path.join(self.output_dir, "cluster-pca"))
 
     
-    def __scatter_part(self, labels, fig, ax, xy, tags, cm):
+    def __scatter_part(self, labels, fig, ax, xy, tags):
 
         axscatter = ax.scatter(
             xy[:, 0], xy[:, 1],  c=np.asarray(labels), cmap=cm.summer, marker='o', s=200*200/len(xy)
@@ -425,9 +440,7 @@ class CallASAP():
                         ha='center', va='center', fontsize=12, color="black"))
             
     
-    def __cluster_label_part(self, labels, ax, xy, cm):
-
-        import matplotlib.patheffects as PathEffects
+    def __cluster_label_part(self, labels, ax, xy):
 
         label_unique = np.unique(labels)
         cluster_colors = [cm.summer(i) for i in np.linspace(0, 1, len(label_unique))]
@@ -447,11 +460,11 @@ class CallASAP():
                         markeredgecolor='grey', 
                         markersize=20 * s[k])
 
-                txt = ax.annotate(str(k), xy=(cluster_mx[k], cluster_my[k]), xytext=(0,0), 
-                    textcoords='offset points', fontsize=10, ha='center', va='center')
-                txt.set_path_effects([
-                            PathEffects.Stroke(linewidth=5, foreground='none'),
-                            PathEffects.Normal()])
+#                txt = ax.annotate(str(k), xy=(cluster_mx[k], cluster_my[k]), xytext=(0,0), 
+#                    textcoords='offset points', fontsize=10, ha='center', va='center')
+#                txt.set_path_effects([
+#                            PathEffects.Stroke(linewidth=5, foreground='none'),
+#                            PathEffects.Normal()])
             
             if k == -1:
                 col = [0, 0, 0, 1]
