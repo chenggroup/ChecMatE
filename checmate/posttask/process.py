@@ -196,6 +196,7 @@ class SSWTrajGeneration():
             all_qs = list((round(float(line[:73].strip().split()[-2]),6) for line in f.readlines() if "Energy" in line))
         with open(laspoutfile, "r") as f:
             traj_qs = list((round(float(line[:73].strip().split()[2]),6) for line in f.readlines() if "Energy,force" in line))
+        with open(laspoutfile, "r") as f:
             traj_es = list((round(float(line[:73].strip().split()[0]),6) for line in f.readlines() if "Energy,force" in line))
 
         traj_strs = []
