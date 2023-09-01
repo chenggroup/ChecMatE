@@ -1,5 +1,13 @@
 # Tutorial
 
+## Announcement
+
+The main features of ChecMate have been integrated into [ai2-kit's CLL](https://github.com/chenggroup/ai2-kit/tree/main) workflow.
+
+lf you use this workflow or the corresponding functions in [ai2-kit's CLL](https://github.com/chenggroup/ai2-kit/tree/main) in in your research, please cite the following paper:
+
+> Yu-Xin Guo, Yong-Bin Zhuang, Jueli Shi, Jun Cheng; ChecMatE: A workflow package to automatically generate machine learning potentials and phase diagrams for semiconductor alloys. J. Chem. Phys. 7 September 2023; 159 (9): 094801. https://doi.org/10.1063/5.0166858
+
 ## Install necessary tools
 
 It is suggested to create a virtual environment via `conda` for your project.  After your conda environment is activated, run the following command to install necessary tools.
