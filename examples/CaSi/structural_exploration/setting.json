@@ -1,0 +1,53 @@
+{
+    "general":{
+        "structure_paths": "../all_stc_spcell/*",
+        "structure_format": "vasp",
+        "type_map": ["Ca", "Si"]
+    },
+    "sampling":{
+        "lasp":{
+            "models_path": ["../fin_models/frozen_model1.pb", "../fin_models/frozen_model2.pb", "../fin_models/frozen_model3.pb", "../fin_models/frozen_model4.pb"],
+            "params": {
+                "potential": "lammps",
+                "SSW.SSWsteps": 100,
+                "SSW.output": "T",
+                "SSW.pressure": 30
+            },
+            "dpdispatcher":{
+                "machine":{
+                    "batch_type": "slurm"
+                }
+            }
+        }, 
+        "bounds": [0.15, 0.6]
+    },
+    "screening":{
+        "e_cutoff": 0.04,
+        "noise_percent": 100,
+        "numb_structure_per_label": 1
+    },
+    "labeling":{
+        "vasp":{
+            "params":{
+                "incar":{
+                    "ENCUT":500
+                }
+            },
+            "dpdispatcher":{
+                "resources":{
+                    "number_node": 1,
+                    "cpu_per_node": 24,
+                    "queue_name": "51-medium",
+                    "group_size": 10
+                }
+            }
+        },
+        "dp":{
+            "dpdispatcher":{
+                "machine":{
+                    "batch_type": "slurm"
+                }
+            }
+        }
+    }
+}

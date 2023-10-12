@@ -1,0 +1,105 @@
+{   
+    "general":{
+    "structure_paths": "./all_stc_spcell/*",
+    "structure_format": "vasp",
+    "dataset": "../dataset",
+    "bad_data": "../bad_data",
+    "type_map": ["Ca", "Si"],
+    "end_criterion": {
+        "accuracy": 0.99,
+        "mean_devi": 0.01
+    }
+},
+"training":{
+    "dp":{
+        "numb_train": 4,
+        "params":{
+            "training":{
+                "numb_steps": 100000
+            }
+        },
+        "dpdispatcher":{
+            "machine":{
+                "batch_type": "slurm"
+            },
+            "resources_temp_style": "gpu3",
+            "task":{
+                "forward_files": ["input.json"],
+                "backward_files": [
+                    "dp.err", 
+                    "dp.log",
+                    "model.ckpt.data-00000-of-00001",
+                    "model.ckpt.index",
+                    "model.ckpt.meta",
+                    "*.pb", 
+                    "lcurve.out"]
+            }
+        }
+    }
+},
+
+"sampling":{
+    "numb_structure_per_system": 2,
+    "lasp": {
+        "params":{
+            "SSW.SSWsteps": 30
+        },
+        "dpdispatcher":{
+            "resources_temp_style": "gpu3-lasp",
+            "resources":{
+                "group_size": 5
+            },
+            "machine":{
+                "batch_type": "slurm"
+            },
+            "task":{
+                "command": "lasp",
+                "forward_files": ["lasp.in", "lasp.str", "data.simple", "in.simple"],
+                "backward_files": ["lasp.err", "lasp.log", "all.arc", "allstr.arc", "lasp.out", "SSWtraj", "model_devi.out"]
+            }
+        }
+    },
+    "bounds": [0.15, 0.6],
+    "accuracy_cutoff": 0.99,
+    "numb_candidate_per_traj": 25
+},
+
+"labeling":{
+    "f_cutoff": 10,
+    "vasp": {
+        "params":{
+            "incar":{
+                "ENCUT":500
+            }
+        },
+        "dpdispatcher":{
+            "resources_temp_style": "cpu-vasp",
+            "resources":{
+                "number_node": 1,
+                "cpu_per_node": 24,
+                "queue_name": "51-medium",
+                "group_size": 10
+            },
+            "task":{
+                "command": "mpiexec.hydra -genvall vasp_std",
+                "forward_files": ["INCAR", "KPOINTS", "POTCAR", "POSCAR"],
+                "backward_files": ["vasp.err", "vasp.log", "OUTCAR", "vasprun.xml", 
+                    "CONTCAR", "DOSCAR", "EIGENVAL"]
+            }
+        }
+    }
+},
+"update_setting": {
+    "0.80": {
+        "training":{
+            "dp":{
+                "params":{
+                    "training":{
+                    "numb_steps": 200000
+                    }
+                }
+            }
+        }
+    }
+}
+}

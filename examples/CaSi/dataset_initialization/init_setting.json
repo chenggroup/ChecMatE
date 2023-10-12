@@ -1,0 +1,55 @@
+{
+    "general":{
+         "structure_paths": "./structures/*",
+         "structure_format": "vasp",
+         "dataset": "./dataset",
+         "bad_data": "./bad_data",
+         "type_map": ["Ca", "Si"]
+     },
+     "sampling":{
+         "lasp": {
+             "params":{
+                 "potential": "vasp",
+                 "SSW.SSWsteps": 2
+             },
+             "p_params":{
+                 "incar": {"ENCUT": 400}
+             },
+             "dpdispatcher":{
+                 "resources_temp_style": "cpu-lasp",
+                 "machine":{
+                     "remote_root": "/data/ybzhuang/checmatewokdir"
+                 },
+                 "resources":{
+                     "number_node": 2,
+                     "group_size": 4,
+                     "module_list": ["deepmd/2.1", "lasphub/3.4.5"]
+                 }
+             }
+         }
+     }, 
+     "labeling":{
+         "f_cutoff": 10,
+         "vasp": {
+             "params":{
+                 "incar":{
+                     "ENCUT":500
+                 }
+             },
+             "dpdispatcher":{
+                 "resources_temp_style": "cpu-vasp",
+                 "resources":{
+                     "group_size":40
+                 },
+                 "machine":{
+                     "remote_root": "/data/ybzhuang/checmatewokdir"
+                 },
+                 "task":{
+                     "backward_files": ["vasp.err", "vasp.log", "OUTCAR", "vasprun.xml", 
+                         "CONTCAR", "DOSCAR", "EIGENVAL", "OSZICAR"]
+                 }
+             }
+         }
+     }
+ }
+ 
